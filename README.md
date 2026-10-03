@@ -37,3 +37,5 @@ once you reconnect. you can use adb unroot/adb root to toggle the default shell 
 Supported Pico 4 OS Versions: 5.2.0 up to 5.11.0 Chinese or Global 5.9.9.
 As of this writing any newer version can be downgraded via edl. As of this writing any newer version can be downgraded via edl.
 ```
+Big thx to Keto! Check out his awesome 2023-33107 writeup at:
+https://keto0422.github.io/2026/02/11/cve-writeup/ 
