@@ -1,7 +1,12 @@
 now with 100% more source code ™
 # picohaxx
-Open source Kernel exploit for Pico 4 devices based on cve-2023-33107
 ```
+Open source Kernel exploit for Pico 4 devices based on cve-2023-33107
+Optimized for a rock-solid 100% success rate and speed [~7s] on all vulnerable Pico 4 devices. 
+
+Supported Pico 4 OS Versions: 5.2.0 up to 5.11.0 Chinese or Global 5.9.9. 
+(As of this writing any newer version can be downgraded via edl)
+
 Usage: picohaxx [options] [-- <final command>]
 
 GENERAL OPTIONS:
@@ -33,9 +38,6 @@ patch adb root, enable persistent tcp 5555 and spawn a root ftp on port 21.
 Note: adbd needs to restart after the root patch. so if you're running the exploit inside
 adb shell, your connection will drop after the first run. adb shell will default to root
 once you reconnect. you can use adb unroot/adb root to toggle the default shell mode.
-
-Supported Pico 4 OS Versions: 5.2.0 up to 5.11.0 Chinese or Global 5.9.9.
-As of this writing any newer version can be downgraded via edl. As of this writing any newer version can be downgraded via edl.
 ```
 Big thx to Keto! Check out his awesome 2023-33107 writeup at:
 https://keto0422.github.io/2026/02/11/cve-writeup/ 
