@@ -510,13 +510,14 @@ void dump_gpumem(uint64_t va, unsigned int size, unsigned int dwords_perIoctl, c
 //=========================================================================================================================
 // "In sowjet russia, pagetable looks up you."
 //=========================================================================================================================
-// Note: this is my first, lame attempt at a page table spray. Scanning memory is slow here. So i tried to turn things 
+// Note: this is my first, lame attempt at a page table spray. Scanning memory is slow here, because the gpu can actually   
+// only read 32bits per CP instruction. Also i wanted it to reliably work on the first try. So i tried to turn things 
 // around. If we're standing kneedeep in PTEs, we don't need to search a lot. Theoretically speaking, the scanning effort 
 // could be made 0, if we we're to spray all available memory with nothing but ptes. Of course that's not possible, but 
 // could pure mass actually be a feasible trade-off here? 
 // This got me curious... 
-// How much memory can the Kernel turn into leaf ptes on this 8gb device? (spoiler: a crazy amount)
-// And how long does that take? A lot less than you'd think. 
+// How much memory can the Kernel turn into leaf ptes on this 8gb device before oom? (spoiler: a crazy amount)
+// How long does that take? A lot less than you'd think. 
 //
 // When spraying pagetables like this, you can only juice so many from a single process without hitting limits, 
 // i found 80 child sprayers to be a good balance here.
@@ -531,15 +532,15 @@ void dump_gpumem(uint64_t va, unsigned int size, unsigned int dwords_perIoctl, c
 // and carefully aligns its start to 2MB. The alignment guarantees that every 2MB block corresponds to exactly one
 // L3 table, so no table is shared between two file mappings. Now inside this region the child maps the very same
 // 4k dummy file at every 2MB aligned position using MAP_FIXED. Because that physical page is shared, we consume
-// almost NO real memory (well not for data). By touching the page we force instantiation of a PTE in each L3 table.
+// virtually NO real memory (well not for data). By touching the page we force instantiation of a PTE in each L3 table.
 // So what really keeps growing here is the kernel's page table structures!
 //
 // Let's do the math:
 // 32GB / 2MB = 16384 L3 tables * 4k = 67108864 ~64MB * 80 childs.
-// Jesus christ, we're producing 5120mb made of nothing but *pure* pagetables.
-// You won't have have to spend a lot of time scanning for those, they will come looking for you xD
-// Then we just change the physical address. The child that sees anything other than 'AAAA' owns the mapping
-// and will provide us arbitrary phys rw from here on.
+// Jesus christ, we're producing a peak 5120mb made of nothing but *pure* pagetables.
+// You won't have have to spend a lot of time scanning. PTEs will come looking for you. Check your pockets!
+// Then we just change the physical address of the next best one. The child that sees anything other than 'AAAA' owns 
+// the mapping and will provide us arbitrary phys rw from here on.
 //======================================================================================================================
 const int num_sprayers      = 80;
 const uint64_t many_gigs    = 32ULL * 1024 * 1024 * 1024 ;
